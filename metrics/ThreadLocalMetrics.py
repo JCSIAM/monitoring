@@ -6,9 +6,12 @@ Created on Jan 27, 2016
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from abc import ABCMeta
+from abc import ABCMeta, staticmethod
 from AbstractMetrics import AbstractMetrics, AbstractMetricsFactory 
-    
+import threading
+
+threadLocal = threading.local()
+
 class LogRotationFrequency:
     __metaclass__ = ABCMeta
     ''''This prevents instantiation of the class since it is an interface. This
@@ -35,6 +38,11 @@ class ThreadLocalMetrics(AbstractMetrics):
         super(ThreadLocalMetrics, self).__init__()
         self._initialize_metrics(path, frequency, interval=1);
         self.id = "xxxx"
+        threadLocal.metrics = self;
+    
+    @staticmethod
+    def get():
+        return threadLocal.metrics
     
     def _initialize_metrics(self, path, frequency, interval):
         self.__create_timed_rotating_log(path, frequency, interval)    
