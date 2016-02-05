@@ -33,7 +33,8 @@ class ThreadLocalMetrics(AbstractMetrics):
         Constructor
         '''
         super(ThreadLocalMetrics, self).__init__()
-        self._initialize_metrics(path, frequency, interval);
+        self._initialize_metrics(path, frequency, interval=1);
+        self.id = "xxxx"
     
     def _initialize_metrics(self, path, frequency, interval):
         self.__create_timed_rotating_log(path, frequency, interval)    
@@ -42,6 +43,14 @@ class ThreadLocalMetrics(AbstractMetrics):
         ''' This just prints out the Metric object 
         '''
         self.__logger.info(self.__str__());
+        
+    def __getitem__(self, k):
+        if k == 'id':
+            return self.id
+        else:
+        #    return super.__getattribute__()
+            return None
+        
     def __create_timed_rotating_log(self, path, frequency, interval):
         ''' This method describes the logging type of service logs
         '''
@@ -54,6 +63,8 @@ class ThreadLocalMetrics(AbstractMetrics):
     def __str(self):
         return super().__str__()
     
+    
+           
 class ThreadLocalMetricsFactory(AbstractMetricsFactory):
     ''' Factory method to create Thread Local Metrics
     Example Usage:
@@ -77,4 +88,5 @@ class ThreadLocalMetricsFactory(AbstractMetricsFactory):
         metrics = ThreadLocalMetrics(self.__service_log_path, self.__frequency, self.__interval)
         self._add_metric_attributes(metrics)
         return metrics   
-            
+
+
