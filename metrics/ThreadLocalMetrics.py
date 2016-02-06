@@ -28,8 +28,8 @@ def create_timed_rotating_log(path, frequency = LogRotationFrequency.HOUR, inter
     ''' This method describes the logging type of service logs
     '''
     # TODO: rotate to gzip format
-    logger = logging.getLogger("service.log")
-    logger.setLevel(logging.INFO)
+    #logger = logging.getLogger("service.log")
+    #logger.setLevel(logging.INFO)
     handler = TimedRotatingFileHandler(path, frequency, interval, __BACKUP_COUNT)
     logger.addHandler(handler)
     return logger;
@@ -38,15 +38,12 @@ logger = create_timed_rotating_log("/var/log/cinder/service.log")
 
         
 class ThreadLocalMetrics(AbstractMetrics):
-    __BACKUP_COUNT = 100
     ''' Number of files to retain in the log folder
     '''
     
-    ''' TODO: Need to implement the actual thread local part. Right now i am coming up with the basic version so that clients can start using it
-    '''
     __threadLocal = threading.local()
         
-    def __init__(self, path, frequency, interval):
+    def __init__(self):
         '''
         Constructor
         '''
@@ -64,17 +61,13 @@ class ThreadLocalMetrics(AbstractMetrics):
         ''' This just prints out the Metric object 
         '''
         logger.info(self.__str__());
-        logger.info(ThreadLocalMetrics.__threadLocal.__dict__)
         
-            
     def __str(self):
         return super().__str__()
     
     def close(self):
         super(ThreadLocalMetrics, self).close()
         ThreadLocalMetrics.__threadLocal.__dict__.clear()
-        logger.info("ThreadLocal:2:")
-        logger.info(ThreadLocalMetrics.__threadLocal.__dict__)
         
            
 class ThreadLocalMetricsFactory(AbstractMetricsFactory):
@@ -90,14 +83,10 @@ class ThreadLocalMetricsFactory(AbstractMetricsFactory):
         self.__interval = 1
         self.__frequency = LogRotationFrequency.HOUR
         
-    def with_log_rotation_frequency_and_interval(self, frequency, interval=1):
-        self.__frequency = frequency
-        self.__interval = interval
-        return self
         
     def create_metrics(self):
         
-        metrics = ThreadLocalMetrics(self.__service_log_path, self.__frequency, self.__interval)
+        metrics = ThreadLocalMetrics()
         self._add_metric_attributes(metrics)
         return metrics
    

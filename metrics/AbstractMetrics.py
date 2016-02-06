@@ -42,13 +42,11 @@ class AbstractMetrics(Metrics):
         self.__timing = {}
         self.__counters = {}
         self.__metrics = {}
-        #self.__display_string = []
         self.__start_time = time()
             
     def add_property(self, name, value):
         if (self.__block_mutates == True): 
             self.__properties[name] = value
-        
     
     def add_date(self, name, value):
         if (self.__block_mutates == True): 
