@@ -28,8 +28,8 @@ def create_timed_rotating_log(path, frequency = LogRotationFrequency.HOUR, inter
     ''' This method describes the logging type of service logs
     '''
     # TODO: rotate to gzip format
-    #logger = logging.getLogger("service.log")
-    #logger.setLevel(logging.INFO)
+    logger = logging.getLogger("service.log")
+    #logger.setLevel(logging.DEBUG)
     handler = TimedRotatingFileHandler(path, frequency, interval, __BACKUP_COUNT)
     logger.addHandler(handler)
     return logger;
