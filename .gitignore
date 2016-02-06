@@ -2,3 +2,7 @@
 .pydevproject
 *.pyc
 .settings/
+build/
+dist/
+metrics.egg-info/
+

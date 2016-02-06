@@ -42,7 +42,7 @@ class AbstractMetrics(Metrics):
         self.__timing = {}
         self.__counters = {}
         self.__metrics = {}
-        self.__display_string = []
+        #self.__display_string = []
         self.__start_time = time()
             
     def add_property(self, name, value):
@@ -79,59 +79,63 @@ class AbstractMetrics(Metrics):
         
     
     def __str__(self):
-        self.__display_string.append(AbstractMetrics.__STARTLINE)
-        self.__append_item("StartTime", self.__start_time, None, AbstractMetrics.__LINE_BREAK)
+        display_string = []
+        display_string.append(AbstractMetrics.__STARTLINE)
+        AbstractMetrics.__append_item(display_string, "StartTime", self.__start_time, None, AbstractMetrics.__LINE_BREAK)
         formatted_end_time =datetime.fromtimestamp(self.__end_time).strftime('%Y-%m-%d %H:%M:%S') 
-        self.__append_item("EndTime", formatted_end_time, None, AbstractMetrics.__LINE_BREAK)
-        self.__append_item("Time", self.__time_in_millis, "ms", AbstractMetrics.__LINE_BREAK)
+        AbstractMetrics.__append_item(display_string, "EndTime", formatted_end_time, None, AbstractMetrics.__LINE_BREAK)
+        AbstractMetrics.__append_item(display_string, "Time", self.__time_in_millis, "ms", AbstractMetrics.__LINE_BREAK)
         ''' Creating special print format from basic time data'''
         # TODO: Create more specialized metrics display
         
-        self.__append_to_display_string(self.__properties.iteritems(), None, AbstractMetrics.__LINE_BREAK) 
+        AbstractMetrics.__append_to_display_string(display_string, self.__properties.iteritems(), None, AbstractMetrics.__LINE_BREAK) 
         ''' display all the properties'''
         
-        self.__append_to_display_string(self.__dates.iteritems(), None, AbstractMetrics.__LINE_BREAK)  
+        AbstractMetrics.__append_to_display_string(display_string, self.__dates.iteritems(), None, AbstractMetrics.__LINE_BREAK)  
         ''' display all the date items'''
         
-        self.__append_items_in_same_line(AbstractMetrics.__TIMING, self.__timing, Unit.MILLIS)
+        AbstractMetrics.__append_items_in_same_line(display_string, AbstractMetrics.__TIMING, self.__timing, Unit.MILLIS)
         ''' display all the timing items'''
         
-        self.__append_items_in_same_line( AbstractMetrics.__COUNTERS, self.__counters, None)
+        AbstractMetrics.__append_items_in_same_line(display_string, AbstractMetrics.__COUNTERS, self.__counters, None)
         ''' display all the counters items'''
         
-        self.__display_string.append(AbstractMetrics.__EOE)
+        display_string.append(AbstractMetrics.__EOE)
         ''' display end of metrics'''
-        return ''.join(self.__display_string)
-    
-    def __append_to_display_string(self, iterable, unit, delimiter):
+        return ''.join(display_string)
+        
+    @staticmethod
+    def __append_to_display_string(display_string, iterable, unit, delimiter):
         ''' Goes through a list of items and print all lists
         '''
         for key, value in iterable:
-            self.__append_item(key, value, unit, delimiter)
-            
-    def __append_item(self, key, value, unit, delimiter):
+            AbstractMetrics.__append_item(display_string, key, value, unit, delimiter)
+    
+    @staticmethod       
+    def __append_item(display_string, key, value, unit, delimiter):
         ''' Add a metrics record. For example,
             ProgramName=CinderAPI or DatabaseConnectionTime=500 ms,
         '''
-        self.__display_string.append(key)
-        self.__display_string.append(AbstractMetrics.__EQUALS)
-        self.__display_string.append(value.__str__())
+        display_string.append(key)
+        display_string.append(AbstractMetrics.__EQUALS)
+        display_string.append(value.__str__())
         if unit:
-            self.__display_string.append(AbstractMetrics.__BLANK)
-            self.__display_string.append(unit.__str__())
-        self.__display_string.append(delimiter)
+            display_string.append(AbstractMetrics.__BLANK)
+            display_string.append(unit.__str__())
+        display_string.append(delimiter)
     
-    def __append_items_in_same_line(self, header, items, unit):
+    @staticmethod
+    def __append_items_in_same_line(display_string, header, items, unit):
         ''' This creates a output like this
          Timing=DatabaseConnectionTime=500 ms,RetryWaitTime=1000 ms,
          Counters=Failure=0,Fault=0,Retry=0,Success=1,Error=0,
         '''
         #TODO: Remove delimeter from the last item
         if (items > 0):
-            self.__display_string.append(header)
-            self.__display_string.append(AbstractMetrics.__EQUALS)
-            self.__append_to_display_string(items.iteritems(), unit, AbstractMetrics.__COMMA)
-            self.__display_string.append(AbstractMetrics.__LINE_BREAK)    
+            display_string.append(header)
+            display_string.append(AbstractMetrics.__EQUALS)
+            AbstractMetrics.__append_to_display_string(display_string, items.iteritems(), unit, AbstractMetrics.__COMMA)
+            display_string.append(AbstractMetrics.__LINE_BREAK)    
     
     def __normalizeTimeToMillis(self, value, unit):
         ''' Change all time units to Milliseconds'''
@@ -198,5 +202,3 @@ class AbstractMetricsFactory(MetricsFactory):
         if (self._request_id is not None):
             metrics.add_property("RequestId", self._request_id)
         
-        
-    

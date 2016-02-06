@@ -6,11 +6,12 @@ Created on Jan 27, 2016
 
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from abc import ABCMeta, staticmethod
+from abc import ABCMeta
 from AbstractMetrics import AbstractMetrics, AbstractMetricsFactory 
 import threading
 
-threadLocal = threading.local()
+#threadLocal = threading.local()
+__BACKUP_COUNT = 100
 
 class LogRotationFrequency:
     __metaclass__ = ABCMeta
@@ -22,6 +23,19 @@ class LogRotationFrequency:
     MINUTE = 'm'
     HOUR = 'h'
     DAY = 'd'
+
+def create_timed_rotating_log(path, frequency = LogRotationFrequency.HOUR, interval = 1):
+    ''' This method describes the logging type of service logs
+    '''
+    # TODO: rotate to gzip format
+    logger = logging.getLogger("service.log")
+    logger.setLevel(logging.INFO)
+    handler = TimedRotatingFileHandler(path, frequency, interval, __BACKUP_COUNT)
+    logger.addHandler(handler)
+    return logger;
+        
+logger = create_timed_rotating_log("/var/log/cinder/service.log")
+
         
 class ThreadLocalMetrics(AbstractMetrics):
     __BACKUP_COUNT = 100
@@ -30,48 +44,38 @@ class ThreadLocalMetrics(AbstractMetrics):
     
     ''' TODO: Need to implement the actual thread local part. Right now i am coming up with the basic version so that clients can start using it
     '''
+    __threadLocal = threading.local()
         
     def __init__(self, path, frequency, interval):
         '''
         Constructor
         '''
         super(ThreadLocalMetrics, self).__init__()
-        self._initialize_metrics(path, frequency, interval=1);
-        self.id = "xxxx"
-        threadLocal.metrics = self;
+        ThreadLocalMetrics.__threadLocal.metrics = self
     
     @staticmethod
     def get():
-        return threadLocal.metrics
+        return ThreadLocalMetrics.__threadLocal.metrics
     
     def _initialize_metrics(self, path, frequency, interval):
-        self.__create_timed_rotating_log(path, frequency, interval)    
-        
+        pass
+ 
     def _flush_metrics(self):
         ''' This just prints out the Metric object 
         '''
-        self.__logger.info(self.__str__());
+        logger.info(self.__str__());
+        logger.info(ThreadLocalMetrics.__threadLocal.__dict__)
         
-    def __getitem__(self, k):
-        if k == 'id':
-            return self.id
-        else:
-        #    return super.__getattribute__()
-            return None
-        
-    def __create_timed_rotating_log(self, path, frequency, interval):
-        ''' This method describes the logging type of service logs
-        '''
-        # TODO: rotate to gzip format
-        self.__logger = logging.getLogger("service.log")
-        self.__logger.setLevel(logging.INFO)
-        handler = TimedRotatingFileHandler(path, frequency, interval, ThreadLocalMetrics.__BACKUP_COUNT)
-        self.__logger.addHandler(handler)
             
     def __str(self):
         return super().__str__()
     
-    
+    def close(self):
+        super(ThreadLocalMetrics, self).close()
+        ThreadLocalMetrics.__threadLocal.__dict__.clear()
+        logger.info("ThreadLocal:2:")
+        logger.info(ThreadLocalMetrics.__threadLocal.__dict__)
+        
            
 class ThreadLocalMetricsFactory(AbstractMetricsFactory):
     ''' Factory method to create Thread Local Metrics
@@ -95,6 +99,5 @@ class ThreadLocalMetricsFactory(AbstractMetricsFactory):
         
         metrics = ThreadLocalMetrics(self.__service_log_path, self.__frequency, self.__interval)
         self._add_metric_attributes(metrics)
-        return metrics   
-
-
+        return metrics
+   
