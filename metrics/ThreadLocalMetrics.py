@@ -10,7 +10,6 @@ from abc import ABCMeta
 from AbstractMetrics import AbstractMetrics, AbstractMetricsFactory 
 import threading
 
-#threadLocal = threading.local()
 __BACKUP_COUNT = 100
 
 class LogRotationFrequency:
@@ -29,7 +28,6 @@ def create_timed_rotating_log(path, frequency = LogRotationFrequency.HOUR, inter
     '''
     # TODO: rotate to gzip format
     logger = logging.getLogger("service.log")
-    #logger.setLevel(logging.DEBUG)
     handler = TimedRotatingFileHandler(path, frequency, interval, __BACKUP_COUNT)
     logger.addHandler(handler)
     return logger;
@@ -79,9 +77,9 @@ class ThreadLocalMetricsFactory(AbstractMetricsFactory):
     
     def __init__(self, service_log_path):
         super(ThreadLocalMetricsFactory, self).__init__()
-        self.__service_log_path = service_log_path
-        self.__interval = 1
-        self.__frequency = LogRotationFrequency.HOUR
+#        self.__service_log_path = service_log_path
+#        self.__interval = 1
+#        self.__frequency = LogRotationFrequency.HOUR
         
         
     def create_metrics(self):
