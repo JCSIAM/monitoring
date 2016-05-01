@@ -88,4 +88,13 @@ class MetricUtil(object):
         metrics = self.fetch_thread_local_metrics()
         metrics.close()
 
-
+    '''
+    Add the following metric name to the timing metrics taking the difference between start_time and end_time
+    '''
+    def report_timing_metric_utc_time(self, metric_name, end_time, start_time):
+        metrics = self.fetch_thread_local_metrics()
+        delta = end_time - start_time
+        seconds = delta.seconds
+        microseconds  = delta.microseconds
+        milliseconds = int(microseconds/1000 + seconds*1000)
+        metrics.add_time(metric_name, milliseconds, Unit.MILLIS)
