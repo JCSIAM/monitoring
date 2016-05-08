@@ -54,13 +54,16 @@ class Singleton(type):
             cls.instance = super(Singleton, cls).__call__(*args, **kwargs)
         return cls.instance
 
+class TLMFMeta(ABCMeta, Singleton):
+    pass
+
 class ThreadLocalMetricsFactory(AbstractMetricsFactory):
     ''' Factory method to create Thread Local Metrics
     Example Usage:
     metricsFactory = ThreadLocalMetricsFactory("/tmp/service_log").with_marketplace_id("IDC1").with_program_name("CinderAPI")
     metrics =  metricsFactory.create_metrics();
     '''
-    __metaclass__ = Singleton
+    __metaclass__ = TLMFMeta
 
     def __init__(self, service_log_path, propagate_to_application_logs = True):
         super(ThreadLocalMetricsFactory, self).__init__()

@@ -162,7 +162,7 @@ class MetricsFactory(object):
     # But we need to solve this problem first.
     # metaclass conflict: the metaclass of a derived class must be a (non-strict)
     # subclass of the metaclasses of all its bases
-    #__metaclass__ = ABCMeta
+    __metaclass__ = ABCMeta
     """This prevents instantiation of the class since it is an interface
     """
     
