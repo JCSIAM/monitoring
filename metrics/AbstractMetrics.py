@@ -72,11 +72,20 @@ class AbstractMetrics(Metrics):
     def close(self):
         self.__end_time = time()
         self.__time_in_millis = int((self.__end_time - self.__start_time)*1000)
+	self.__time = self.__end_time - self.__start_time
         self.__block_mutates = True
         self._flush_metrics()
         
+    def __properties__(self):
+	properties = self.__properties
+	properties.update(self.__dates)
+	properties.update(self.__timing)
+	properties.update(self.__metrics)
+	time = {'time_to_execute':self.__time}
+	properties.update(time)
+	return properties
     
-    def __str__(self):
+    def __str__(self):  
         display_string = []
         display_string.append(AbstractMetrics.__STARTLINE)
         AbstractMetrics.__append_item(display_string, "StartTime", self.__start_time, None, AbstractMetrics.__LINE_BREAK)
@@ -99,6 +108,7 @@ class AbstractMetrics(Metrics):
         ''' display all the counters items'''
         
         display_string.append(AbstractMetrics.__EOE)
+	
         ''' display end of metrics'''
         return ''.join(display_string)
         
@@ -148,8 +158,12 @@ class AbstractMetrics(Metrics):
 class AbstractMetricsFactory(MetricsFactory):
     ''' An abstract factory which creates some basic attributes of a metric object
     '''
-    
+    # TODO: This classes should not be instantiable.
+    # To be removed... But we need to solve this problem first.
+    # metaclass conflict: the metaclass of a derived class must be a (non-strict)
+    # subclass of the metaclasses of all its bases
     __metaclass__ = ABCMeta
+
     '''This prevents instantiation of the class since it is an interface. This
     class however cannot be instantiated as it is an abstract class
     '''

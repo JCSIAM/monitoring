@@ -158,6 +158,10 @@ class Metrics(object):
 class MetricsFactory(object):
     """ This is an interface factory method to create an instance of Metrics class
     """
+    # TODO: This classes should not be instantiable.
+    # But we need to solve this problem first.
+    # metaclass conflict: the metaclass of a derived class must be a (non-strict)
+    # subclass of the metaclasses of all its bases
     __metaclass__ = ABCMeta
     """This prevents instantiation of the class since it is an interface
     """
