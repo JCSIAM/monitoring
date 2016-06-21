@@ -95,10 +95,11 @@ class ThreadLocalMetricsFactory(AbstractMetricsFactory):
 	path = '/home/zmq.conf'
 	config = configparser.ConfigParser()
 	config.read(path)
-	if 'tcp' in config:
-		port = config['tcp']['port']
-		add = config['tcp']['add']
-		zmqPath = "tcp://"+str(add)+":"+str(port)
+	if 'zmq' in config:
+		port = config['zmq']['port']
+		add = config['zmq']['add']
+		protocol = config['zmq']['protocol']
+		zmqPath = str(protocol)+"://"+str(add)+":"+str(port)
 	context = zmq.Context()
 	self.zmq_socket = context.socket(zmq.PUSH)
 	self.zmq_socket.connect(zmqPath)
