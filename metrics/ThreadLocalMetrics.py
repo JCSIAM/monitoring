@@ -25,7 +25,7 @@ class ThreadLocalMetrics(AbstractMetrics):
         super(ThreadLocalMetrics, self).__init__()
         ThreadLocalMetrics.__threadLocal.metrics = self
         self.__logger = logger
-	self.use_zmq = use_zmq
+        self.use_zmq = use_zmq
 
     @staticmethod
     def get():
