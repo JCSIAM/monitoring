@@ -75,14 +75,14 @@ class ThreadLocalMetricsFactory(AbstractMetricsFactory):
     __metaclass__ = TLMFMeta
 
     def __init__(self, use_zmq, service_log_path, propagate_to_application_logs = True):
-        super(ThreadLocalMetricsFactory, self).__init__()
-	self.use_zmq = use_zmq
-	if use_zmq==True:
-		self.__logger = self.connect_zmq()
-	else:	
-		# This is done so that metrics flowing in cinder do not break.  To be removed soon.
-		service_log_path = service_log_path.replace("service_log", "service.log")
-		self.__logger = self.create_timed_rotating_log(service_log_path, propagate_to_application_logs)
+    	super(ThreadLocalMetricsFactory, self).__init__()
+    	self.use_zmq = use_zmq
+    	if use_zmq==True:
+    		self.__logger = self.connect_zmq()
+    	else:
+    		# This is done so that metrics flowing in cinder do not break.  To be removed soon.
+    		service_log_path = service_log_path.replace("service_log", "service.log")
+    		self.__logger = self.create_timed_rotating_log(service_log_path, propagate_to_application_logs)
     '''
     This method creates a thread local metrics
     '''
