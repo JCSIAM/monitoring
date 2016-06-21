@@ -85,7 +85,7 @@ class AbstractMetrics(Metrics):
 	properties.update(time)
 	return properties
     
-    def __str__(self):  
+    def __str__(self):
         display_string = []
         display_string.append(AbstractMetrics.__STARTLINE)
         AbstractMetrics.__append_item(display_string, "StartTime", self.__start_time, None, AbstractMetrics.__LINE_BREAK)
