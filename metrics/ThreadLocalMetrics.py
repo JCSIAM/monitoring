@@ -12,21 +12,6 @@ import zmq
 import json
 import configparser
 
-def create_timed_rotating_log(path):
-    ''' This method describes the logging type of service logs
-    '''
-    logger = logging.getLogger("service.log")
-    # logger.propagate = False
-    # Uncomment this after thorough validation in Production, that all metrics are in service
-    # logs. This will remove the service logs from cinder API.
-    handler = logging.handlers.WatchedFileHandler(path)
-    # Cinder itself uses watched file handler. LogRotation is handled externally using logrotate.d
-    logger.addHandler(handler)
-    return logger
-
-# TODO: This needs to be configurable and passed through in the class.
-logger = create_timed_rotating_log("/var/log/cinder/service.log")
-
 class ThreadLocalMetrics(AbstractMetrics):
     ''' Number of files to retain in the log folder
     '''
